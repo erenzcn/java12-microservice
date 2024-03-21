@@ -45,9 +45,7 @@ public class BasketServiceImpl implements BasketService {
         BasketProduct basketProduct = basketProductService.findByBasketIdAndProductId(basket.getId(), basketDto.getBasketProducts().get(0).getProductId());
         ProductResponse product = productService.findProduct(basketDto.getBasketProducts().get(0).getProductId());
         if (basketProduct == null) {
-            basketProduct = new BasketProduct();
-            createBasketProduct(basketDto.getBasketProducts(), basketProduct, basket, product.getPrice());
-            basketProduct = basketProductService.save(basketProduct);
+            basketProduct = basketProductService.save(createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice()));
             basketProducts.add(basketProduct);
         } else {
             for (BasketProductDto basketProductDto : basketDto.getBasketProducts()) {
@@ -67,10 +65,8 @@ public class BasketServiceImpl implements BasketService {
         basket.setStatus(0);
         basket.setUserId(basketDto.getUserId());
         List<BasketProduct> basketProducts = new ArrayList<>();
-        BasketProduct basketProduct = new BasketProduct();
         ProductResponse product = productService.findProduct(basketDto.getBasketProducts().get(0).getProductId());
-        createBasketProduct(basketDto.getBasketProducts(), basketProduct, basket, product.getPrice());
-        basketProductService.save(basketProduct);
+        basketProductService.save(createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice()));
         basket.setBasketProducts(basketProducts);
         basket.setTotalPrice(calculateTotalPriceOfBasket(basketProducts));
         basket = repository.save(basket);
@@ -83,13 +79,15 @@ public class BasketServiceImpl implements BasketService {
                 .sum();
     }
 
-    private void createBasketProduct(List<BasketProductDto> basketProducts, BasketProduct basketProduct, Basket basket, Double price) {
+    private BasketProduct createBasketProduct(List<BasketProductDto> basketProducts ,Basket basket, Double price) {
+        BasketProduct basketProduct = new BasketProduct();
         basketProducts.forEach(basketProductDto -> {
             basketProduct.setProductId(basketProductDto.getProductId());
             basketProduct.setBasket(basket);
             basketProduct.setCount(basketProductDto.getCount() + basketProduct.getCount());
             basketProduct.setTotalPrice(calculateTotalPrice(price, basketProduct.getCount()));
         });
+        return basketProduct;
     }
 
     private double calculateTotalPrice(Double price, int count) {

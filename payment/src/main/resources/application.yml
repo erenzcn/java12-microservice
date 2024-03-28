@@ -3,10 +3,20 @@ server:
 spring:
   application:
     name: payment
+  datasource:
+    url: jdbc:mysql://localhost:3306/microservice_payment_db
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  main:
+    allow-circular-references: true
 
 eureka:
   client:
     fetch-registry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-

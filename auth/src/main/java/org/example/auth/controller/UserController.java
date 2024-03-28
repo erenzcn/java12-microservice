@@ -2,6 +2,8 @@ package org.example.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.auth.dto.UserDto;
+import org.example.auth.dto.UserLoginDto;
+import org.example.auth.request.UserLoginRequest;
 import org.example.auth.request.UserRequest;
 import org.example.auth.response.UserResponse;
 import org.example.auth.service.UserService;
@@ -35,17 +37,34 @@ public class UserController {
         return service.findAll().stream().map(this::toResponse).toList();
     }
 
+    @PostMapping("/login")
+    public void login(@RequestBody UserLoginRequest request){
+        service.login(toDto(request));
+    }
     public UserResponse toResponse(UserDto dto){
         return UserResponse.builder()
                 .id(dto.getId())
                 .name(dto.getName())
                 .password(dto.getPassword())
+                .email(dto.getEmail())
+                .surname(dto.getSurname())
+                .username(dto.getUsername())
                 .build();
     }
 
     public UserDto toDto(UserRequest userRequest){
         return UserDto.builder()
                 .name(userRequest.getName())
+                .password(userRequest.getPassword())
+                .email(userRequest.getEmail())
+                .surname(userRequest.getSurname())
+                .username(userRequest.getUsername())
+                .build();
+    }
+
+    public UserLoginDto toDto(UserLoginRequest userRequest){
+        return UserLoginDto.builder()
+                .username(userRequest.getUsername())
                 .password(userRequest.getPassword())
                 .build();
     }

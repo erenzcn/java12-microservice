@@ -9,4 +9,6 @@ import lombok.*;
 @Builder
 public class CategoryRequest {
     private String name;
+    private String description;
+    private Boolean status;
 }

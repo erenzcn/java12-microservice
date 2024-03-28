@@ -9,7 +9,6 @@ import lombok.*;
 @Builder
 public class BasketRequest {
     private int userId;
-    private int basketId;
     private int productId;
     private int count;
 }

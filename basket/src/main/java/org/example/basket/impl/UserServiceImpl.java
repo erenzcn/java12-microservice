@@ -10,6 +10,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse findUserById(int id) {
         RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject("http://localhost:8989/auth/users" + id, UserResponse.class);
+        return restTemplate.getForObject("http://localhost:8989/auth/users/" + id, UserResponse.class);
     }
 }

@@ -16,8 +16,10 @@ import java.util.List;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private int categoryId;
     private String name;
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    private String description;
+    private Boolean status;
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     List<Product> products;
 }

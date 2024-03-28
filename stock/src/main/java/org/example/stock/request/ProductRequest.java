@@ -10,5 +10,7 @@ import lombok.*;
 public class ProductRequest {
     private String name;
     private Double price;
+    private String description;
+    private Boolean status;
     private int categoryId;
 }

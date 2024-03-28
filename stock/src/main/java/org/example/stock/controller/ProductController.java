@@ -39,6 +39,8 @@ public class ProductController {
         return ProductDto.builder()
                 .name(productRequest.getName())
                 .price(productRequest.getPrice())
+                .description(productRequest.getDescription())
+                .status(productRequest.getStatus())
                 .categoryId(productRequest.getCategoryId())
                 .build();
     }
@@ -48,6 +50,8 @@ public class ProductController {
                 .id(dto.getId())
                 .name(dto.getName())
                 .price(dto.getPrice())
+                .description(dto.getDescription())
+                .status(dto.getStatus())
                 .categoryId(dto.getCategoryId())
                 .build();
     }

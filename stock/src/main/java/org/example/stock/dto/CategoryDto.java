@@ -10,7 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CategoryDto {
-    private int id;
+    private int categoryId;
     private String name;
+    private String description;
+    private Boolean status;
     private List<ProductDto> products;
 }

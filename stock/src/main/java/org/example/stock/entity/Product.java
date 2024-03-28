@@ -16,8 +16,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
+    private String description;
+    private Boolean status;
     private Double price;
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
 }

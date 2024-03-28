@@ -3,8 +3,11 @@ package org.example.auth.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.auth.dto.UserDto;
+import org.example.auth.dto.UserLoginDto;
 import org.example.auth.entity.User;
+import org.example.auth.exception.AuthException;
 import org.example.auth.repository.UserRepository;
+import org.example.auth.response.BaseResponse;
 import org.example.auth.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -14,20 +17,45 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    private static final int MAX_LOGIN_ATTEMPTS = 3;
+    private int loginAttempts = 0;
     @Override
     public UserDto save(UserDto userDto) {
+        userDto.setStatus(true);
         return toDto(repository.save(toEntity(userDto)));
     }
 
     @Override
+    public void login(UserLoginDto userDto) {
+        User user = repository.findByUsername(userDto.getUsername()).orElseThrow(() ->
+                new AuthException(new BaseResponse(1001, "User not found")));
+        if (user.getStatus()) {
+            if (!user.getPassword().equals(userDto.getPassword())) {
+                loginAttempts++;
+                if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+                    user.setStatus(false);
+                    repository.save(user);
+                    throw new AuthException(new BaseResponse(1003, "Your login attempts have exceeded the limit"));
+                } else {
+                    throw new AuthException(new BaseResponse(1002, "Password is wrong"));
+                }
+            }
+            loginAttempts = 0;
+            throw new AuthException(new BaseResponse(200, "Login successful"));
+        } else {
+            throw new AuthException(new BaseResponse(1004, "User is blocked, please contact the administrator"));
+        }
+    }
+    @Override
     public UserDto findById(int id) {
-        return toDto(repository.findById(id).orElseThrow(()-> new RuntimeException("User not found")));
+        return toDto(repository.findById(id).orElseThrow(() ->
+                new AuthException(new BaseResponse(1001, "User not found"))));
     }
 
     @Override
     public String deleteById(int id) {
-        User user=repository.findById(id).orElseThrow(()->
-                new RuntimeException("User not found"));
+        User user=repository.findById(id).orElseThrow(() ->
+                new AuthException(new BaseResponse(1001, "User not found")));
         repository.deleteById(user.getId());
         return "User named "+user.getName()+ " has been deleted";
     }
@@ -42,6 +70,10 @@ public class UserServiceImpl implements UserService {
                 .id(user.getId())
                 .name(user.getName())
                 .password(user.getPassword())
+                .email(user.getEmail())
+                .surname(user.getSurname())
+                .status(user.getStatus())
+                .username(user.getUsername())
                 .build();
     }
 
@@ -50,6 +82,10 @@ public class UserServiceImpl implements UserService {
         User user=new User();
         user.setName(dto.getName());
         user.setPassword(dto.getPassword());
+        user.setEmail(dto.getEmail());
+        user.setSurname(dto.getSurname());
+        user.setStatus(dto.getStatus());
+        user.setUsername(dto.getUsername());
         return user;
     }
 }

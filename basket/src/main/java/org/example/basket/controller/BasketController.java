@@ -2,6 +2,7 @@ package org.example.basket.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.basket.dto.BasketDto;
+import org.example.basket.dto.BasketProductDto;
 import org.example.basket.request.BasketRequest;
 import org.example.basket.response.BasketResponse;
 import org.example.basket.service.BasketService;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("baskets")
@@ -34,10 +37,16 @@ public class BasketController {
     }
 
     public BasketDto toDto(BasketRequest request) {
+        List<BasketProductDto> basketProductDtoList = List.of(
+                BasketProductDto.builder()
+                        .productId(request.getProductId())
+                        .count(request.getCount())
+                        .build()
+        );
         return BasketDto.builder()
                 .userId(request.getUserId())
                 .count(request.getCount())
-                .id(request.getBasketId())
+                .basketProducts(basketProductDtoList)
                 .build();
     }
 }

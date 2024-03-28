@@ -26,21 +26,29 @@ public class CategoryController {
         return service.deleteById(id);
     }
 
+    @GetMapping("/{id}")
+    public CategoryResponse findById(@PathVariable int id){
+        return toResponse(service.findById(id));
+    }
+
     @GetMapping("/get-all")
     public List<CategoryResponse> getAll(){
         return service.findAll().stream().map(this::toResponse).toList();
     }
     private CategoryResponse toResponse(CategoryDto dto){
         return CategoryResponse.builder()
-                .id(dto.getId())
+                .categoryId(dto.getCategoryId())
                 .name(dto.getName())
-                .products(dto.getProducts())
+                .description(dto.getDescription())
+                .status(dto.getStatus())
                 .build();
     }
 
     private CategoryDto toDto(CategoryRequest categoryRequest){
         return CategoryDto.builder()
                 .name(categoryRequest.getName())
+                .description(categoryRequest.getDescription())
+                .status(categoryRequest.getStatus())
                 .build();
     }
 }

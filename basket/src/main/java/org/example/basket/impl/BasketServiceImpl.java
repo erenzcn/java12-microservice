@@ -6,9 +6,7 @@ import org.example.basket.dto.BasketDto;
 import org.example.basket.dto.BasketProductDto;
 import org.example.basket.entity.Basket;
 import org.example.basket.entity.BasketProduct;
-import org.example.basket.exception.BasketException;
 import org.example.basket.repository.BasketRepository;
-import org.example.basket.response.BaseResponse;
 import org.example.basket.response.ProductResponse;
 import org.example.basket.response.UserResponse;
 import org.example.basket.service.BasketProductService;
@@ -35,39 +33,35 @@ public class BasketServiceImpl implements BasketService {
     public BasketDto save(BasketDto basketDto) {
         UserResponse user = userService.findUserById(basketDto.getUserId());
         Basket basket = repository.findBasketByUserIdAndStatus(user.getId(), 0);
-        if (user.getName()!=null){
-            if (basket == null) {
-                return thereIsNoBasket(basketDto);
-            } else {
-                return thereIsBasket(basket, basketDto);
-            }
-        }else {
-            throw new BasketException(new BaseResponse(5001, "User not found"));
+
+        if (basket == null) {
+            return thereIsNoBasket(basketDto);
+        } else {
+            return thereIsBasket(basket, basketDto);
         }
+
     }
 
     private BasketDto thereIsBasket(Basket basket, BasketDto basketDto) {
         List<BasketProduct> basketProducts = basket.getBasketProducts();
         BasketProduct basketProduct = basketProductService.findByBasketIdAndProductId(basket.getId(), basketDto.getBasketProducts().get(0).getProductId());
         ProductResponse product = productService.findProduct(basketDto.getBasketProducts().get(0).getProductId());
-        if (product.getName()!=null){
-            if (basketProduct == null) {
-                basketProduct = basketProductService.save(createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice()));
-                basketProducts.add(basketProduct);
-            } else {
-                for (BasketProductDto basketProductDto : basketDto.getBasketProducts()) {
-                    basketProduct.setCount(basketProduct.getCount() + basketProductDto.getCount());
-                    basketProduct.setTotalPrice(calculateTotalPrice(product.getPrice(), basketProduct.getCount()));
-                    basketProduct = basketProductService.save(basketProduct);
-                }
-            }
 
-            basket.setBasketProducts(basketProducts);
-            basket.setTotalPrice(calculateTotalPriceOfBasket(basketProducts));
-            return toDto(basket);
-        }else {
-            throw new BasketException(new BaseResponse(5001, "Product not found"));
+        if (basketProduct == null) {
+            basketProduct = basketProductService.save(createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice()));
+            basketProducts.add(basketProduct);
+        } else {
+            for (BasketProductDto basketProductDto : basketDto.getBasketProducts()) {
+                basketProduct.setCount(basketProduct.getCount() + basketProductDto.getCount());
+                basketProduct.setTotalPrice(calculateTotalPrice(product.getPrice(), basketProduct.getCount()));
+                basketProduct = basketProductService.save(basketProduct);
+            }
         }
+
+        basket.setBasketProducts(basketProducts);
+        basket.setTotalPrice(calculateTotalPriceOfBasket(basketProducts));
+        return toDto(basket);
+
     }
 
     private BasketDto thereIsNoBasket(BasketDto basketDto) {
@@ -76,17 +70,13 @@ public class BasketServiceImpl implements BasketService {
         basket.setUserId(basketDto.getUserId());
         List<BasketProduct> basketProducts = new ArrayList<>();
         ProductResponse product = productService.findProduct(basketDto.getBasketProducts().get(0).getProductId());
-        if (product.getName()!=null) {
-            BasketProduct basketProduct = createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice());
-            basketProductService.save(basketProduct);
-            basketProducts.add(basketProduct);
-            basket.setBasketProducts(basketProducts);
-            basket.setTotalPrice(calculateTotalPriceOfBasket(basketProducts));
-            basket = repository.save(basket);
-            return toDto(basket);
-        }else {
-            throw new BasketException(new BaseResponse(5001, "Product not found"));
-        }
+        BasketProduct basketProduct = createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice());
+        basketProductService.save(basketProduct);
+        basketProducts.add(basketProduct);
+        basket.setBasketProducts(basketProducts);
+        basket.setTotalPrice(calculateTotalPriceOfBasket(basketProducts));
+        basket = repository.save(basket);
+        return toDto(basket);
 
     }
 
@@ -96,7 +86,7 @@ public class BasketServiceImpl implements BasketService {
                 .sum();
     }
 
-    private BasketProduct createBasketProduct(List<BasketProductDto> basketProducts ,Basket basket, Double price) {
+    private BasketProduct createBasketProduct(List<BasketProductDto> basketProducts, Basket basket, Double price) {
         BasketProduct basketProduct = new BasketProduct();
         basketProducts.forEach(basketProductDto -> {
             basketProduct.setProductId(basketProductDto.getProductId());

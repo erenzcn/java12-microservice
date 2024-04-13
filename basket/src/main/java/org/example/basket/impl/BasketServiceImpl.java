@@ -9,14 +9,12 @@ import org.example.basket.entity.BasketProduct;
 import org.example.basket.repository.BasketRepository;
 import org.example.basket.response.ProductResponse;
 import org.example.basket.response.UserResponse;
-import org.example.basket.service.BasketProductService;
-import org.example.basket.service.BasketService;
-import org.example.basket.service.ProductService;
-import org.example.basket.service.UserService;
+import org.example.basket.service.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -28,10 +26,11 @@ public class BasketServiceImpl implements BasketService {
     private final BasketProductService basketProductService;
     private final UserService userService;
     private final ProductService productService;
+    private final AuthFeignIntegration authFeignIntegration;
 
     @Override
     public BasketDto save(BasketDto basketDto) {
-        UserResponse user = userService.findUserById(basketDto.getUserId());
+        UserResponse user = authFeignIntegration.findUserById(basketDto.getUserId());
         Basket basket = repository.findBasketByUserIdAndStatus(user.getId(), 0);
 
         if (basket == null) {
@@ -40,6 +39,11 @@ public class BasketServiceImpl implements BasketService {
             return thereIsBasket(basket, basketDto);
         }
 
+    }
+
+    @Override
+    public UserResponse test(int id) {
+        return authFeignIntegration.findUserById(id);
     }
 
     private BasketDto thereIsBasket(Basket basket, BasketDto basketDto) {

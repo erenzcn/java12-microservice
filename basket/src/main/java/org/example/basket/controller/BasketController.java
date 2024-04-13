@@ -5,11 +5,9 @@ import org.example.basket.dto.BasketDto;
 import org.example.basket.dto.BasketProductDto;
 import org.example.basket.request.BasketRequest;
 import org.example.basket.response.BasketResponse;
+import org.example.basket.response.UserResponse;
 import org.example.basket.service.BasketService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +21,11 @@ public class BasketController {
     @PostMapping
     public BasketResponse addBasket(@RequestBody BasketRequest basketRequest) {
         return toResponse(service.save(toDto(basketRequest)));
+    }
+
+    @GetMapping("/{id}")
+    public UserResponse test(@PathVariable int id) {
+        return service.test(id);
     }
 
 

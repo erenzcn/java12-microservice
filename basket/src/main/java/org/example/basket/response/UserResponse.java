@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserResponse {
+public class UserResponse extends BaseResponse{
     private int id;
     private String name;
     private String password;

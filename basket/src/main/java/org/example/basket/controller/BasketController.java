@@ -5,6 +5,7 @@ import org.example.basket.dto.BasketDto;
 import org.example.basket.dto.BasketProductDto;
 import org.example.basket.request.BasketRequest;
 import org.example.basket.response.BasketResponse;
+import org.example.basket.response.ProductResponse;
 import org.example.basket.response.UserResponse;
 import org.example.basket.service.BasketService;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,11 @@ public class BasketController {
     @GetMapping("/{id}")
     public UserResponse test(@PathVariable int id) {
         return service.test(id);
+    }
+
+    @GetMapping("/product/{id}")
+    public ProductResponse test2(@PathVariable int id) {
+        return service.test2(id);
     }
 
 

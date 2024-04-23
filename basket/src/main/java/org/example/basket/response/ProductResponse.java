@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductResponse {
+public class ProductResponse extends BaseResponse{
     private int id;
     private String name;
     private Double price;

@@ -25,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto findById(int id) {
+    public ProductDto findProductById(int id) {
         return toDto(repository.findById(id).orElseThrow(()->
                 new StockException(new BaseResponse(3001, "Product not found"))));
     }

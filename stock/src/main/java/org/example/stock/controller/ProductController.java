@@ -31,8 +31,8 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductResponse getById(@PathVariable int id){
-        return toResponse(service.findById(id));
+    public ProductResponse findProductById(@PathVariable int id){
+        return toResponse(service.findProductById(id));
     }
 
     public ProductDto toDto(ProductRequest productRequest){

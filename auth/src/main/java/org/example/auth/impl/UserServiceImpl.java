@@ -8,6 +8,7 @@ import org.example.auth.entity.User;
 import org.example.auth.exception.AuthException;
 import org.example.auth.repository.UserRepository;
 import org.example.auth.response.BaseResponse;
+import org.example.auth.service.UserCacheService;
 import org.example.auth.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +18,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    private final UserCacheService userCacheService;
+
     private static final int MAX_LOGIN_ATTEMPTS = 3;
     private int loginAttempts = 0;
+
     @Override
     public UserDto save(UserDto userDto) {
-        userDto.setStatus(true);
-        return toDto(repository.save(toEntity(userDto)));
+
+        UserDto dto = toDto(repository.save(toEntity(userDto)));
+        userCacheService.putUser(dto.getId(), dto);
+        return userCacheService.getUser(dto.getId());
     }
 
     @Override
@@ -46,11 +52,19 @@ public class UserServiceImpl implements UserService {
             throw new AuthException(new BaseResponse(1004, "User is blocked, please contact the administrator"));
         }
     }
+
     @Override
     public UserDto findById(int id) {
-        return toDto(repository.findById(id).orElseThrow(() ->
-                new AuthException(new BaseResponse(1001, "User not found"))));
+
+
+        if(userCacheService.getUser(id)!=null){
+            return userCacheService.getUser(id);
+        }else {
+            return toDto(repository.findById(id).orElseThrow(() ->
+                    new AuthException(new BaseResponse(1001, "User not found"))));
+        }
     }
+
 
     @Override
     public String deleteById(int id) {

@@ -1,15 +1,14 @@
 package org.example.basket.service;
 
-import org.example.basket.response.UserResponse;
+import org.example.basket.response.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-@FeignClient(name = "auth")
-public interface AuthFeignCallableApi {
+@FeignClient(name = "stock")
+public interface StockFeignCallableApi {
 
-    @GetMapping("/users/{id}")
-    UserResponse findUserById(@PathVariable int id);
-
+    @GetMapping("/products/{id}")
+    ProductResponse findProductById(@PathVariable int id);
 }

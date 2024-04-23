@@ -3,20 +3,20 @@ package org.example.basket.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.basket.exception.BasketException;
 import org.example.basket.response.BaseResponse;
-import org.example.basket.response.UserResponse;
-import org.example.basket.service.AuthFeignCallableApi;
-import org.example.basket.service.AuthFeignIntegration;
+import org.example.basket.response.ProductResponse;
+import org.example.basket.service.StockFeignCallableApi;
+import org.example.basket.service.StockFeignIntegration;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthFeignServiceImpl implements AuthFeignIntegration {
+public class StockFeignServiceImpl implements StockFeignIntegration {
 
-    private final AuthFeignCallableApi authFeignCallableApi;
+    private final StockFeignCallableApi stockFeignCallableApi;
 
     @Override
-    public UserResponse findUserById(int id) {
-        UserResponse response = authFeignCallableApi.findUserById(id);
+    public ProductResponse findProductById(int id) {
+        ProductResponse response = stockFeignCallableApi.findProductById(id);
         if (response.getId() != 0){
             return response;
         } else {

@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProductService {
     ProductDto save(ProductDto productDto);
 
-    ProductDto findById(int id);
+    ProductDto findProductById(int id);
 
     String deleteById(int id);
 

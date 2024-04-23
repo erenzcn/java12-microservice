@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -24,9 +23,8 @@ public class BasketServiceImpl implements BasketService {
 
     private final BasketRepository repository;
     private final BasketProductService basketProductService;
-    private final UserService userService;
-    private final ProductService productService;
     private final AuthFeignIntegration authFeignIntegration;
+    private final StockFeignIntegration stockFeignIntegration;
 
     @Override
     public BasketDto save(BasketDto basketDto) {
@@ -46,10 +44,15 @@ public class BasketServiceImpl implements BasketService {
         return authFeignIntegration.findUserById(id);
     }
 
+    @Override
+    public ProductResponse test2(int id) {
+        return stockFeignIntegration.findProductById(id);
+    }
+
     private BasketDto thereIsBasket(Basket basket, BasketDto basketDto) {
         List<BasketProduct> basketProducts = basket.getBasketProducts();
         BasketProduct basketProduct = basketProductService.findByBasketIdAndProductId(basket.getId(), basketDto.getBasketProducts().get(0).getProductId());
-        ProductResponse product = productService.findProduct(basketDto.getBasketProducts().get(0).getProductId());
+        ProductResponse product = stockFeignIntegration.findProductById(basketDto.getBasketProducts().get(0).getProductId());
 
         if (basketProduct == null) {
             basketProduct = basketProductService.save(createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice()));
@@ -73,7 +76,7 @@ public class BasketServiceImpl implements BasketService {
         basket.setStatus(0);
         basket.setUserId(basketDto.getUserId());
         List<BasketProduct> basketProducts = new ArrayList<>();
-        ProductResponse product = productService.findProduct(basketDto.getBasketProducts().get(0).getProductId());
+        ProductResponse product = stockFeignIntegration.findProductById(basketDto.getBasketProducts().get(0).getProductId());
         BasketProduct basketProduct = createBasketProduct(basketDto.getBasketProducts(), basket, product.getPrice());
         basketProductService.save(basketProduct);
         basketProducts.add(basketProduct);
